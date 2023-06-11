@@ -39,21 +39,20 @@ export function Page({ renderChildren }: PageParam) {
         },
       });
 
-      await deep.await(installLink.id);
+      let packageLinkId: number|undefined = undefined;
+      while (!packageLinkId) {
+        try {
+          packageLinkId = await deep.id(packageName);
+        } catch (error) {
+          console.log(
+            `Package ${packageName} not installed yet, retrying in 1 second...`
+          );
+          await delay(1000);
+        }
+      }
 
-      // let packageLinkId: number|undefined = undefined;
-      // while (!packageLinkId) {
-      //   try {
-      //     packageLinkId = await deep.id(packageName);
-      //   } catch (error) {
-      //     console.log(
-      //       `Package ${packageName} not installed yet, retrying in 1 second...`
-      //     );
-      //     await delay(1000);
-      //   }
-      // }
-
-      const packageLinkId = await deep.id(packageName)
+      // await deep.await(installLink.id);
+      // const packageLinkId = await deep.id(packageName)
       await deep.insert([
         {
           type_id: await deep.id('@deep-foundation/core', 'Join'),
